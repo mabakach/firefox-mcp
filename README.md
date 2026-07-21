@@ -142,17 +142,34 @@ This is an intentional power tool. It executes arbitrary JavaScript in the page 
 
 ## wss:// setup (Firefox HTTPS-Only Mode)
 
-If Firefox HTTPS-Only Mode is enabled, the extension can't connect over plain `ws://`. Run the server with TLS instead:
+Firefox extension background pages run in a secure context (`moz-extension://`), so Firefox upgrades plain `ws://` connections to `wss://` when HTTPS-Only Mode is enabled. Site exceptions in the Firefox settings do **not** help here — the upgrade happens at the extension level, not the tab level. The fix is to run the server with TLS.
 
-### 1. Install mkcert and generate a localhost certificate
+### Why mkcert
+
+The server needs a certificate that Firefox trusts. Self-signed certs are rejected. `mkcert` creates a local certificate authority (CA), installs it into the system and browser trust stores, and issues a cert signed by that CA — so Firefox accepts the `wss://` connection without warnings or errors.
+
+### 1. Install mkcert
 
 ```bash
-brew install mkcert nss   # nss adds the CA to Firefox's cert store
-mkcert -install           # creates and trusts a local CA
+brew install mkcert nss   # nss is required to add the CA to Firefox's cert store
+```
+
+### 2. Install the local CA
+
+```bash
+mkcert -install
+```
+
+This creates the CA and registers it with Firefox (via the `nss` cert database). You only need to do this once per machine.
+
+### 3. Generate a certificate for 127.0.0.1
+
+```bash
+mkdir -p ~/.firefox-mcp
 mkcert -key-file ~/.firefox-mcp/key.pem -cert-file ~/.firefox-mcp/cert.pem 127.0.0.1
 ```
 
-### 2. Pass the cert paths to the MCP server
+### 4. Pass the cert paths to the MCP server
 
 ```bash
 claude mcp add firefox \
@@ -164,9 +181,15 @@ claude mcp add firefox \
   -- node /absolute/path/to/firefox-mcp/dist/index.js
 ```
 
-### 3. Enable wss:// in the extension options
+If you already have the server registered without TLS, remove it first:
 
-Open the extension **Preferences** page, tick **Use secure WebSocket (wss://)**, and click **Save**.
+```bash
+claude mcp remove firefox
+```
+
+### 5. Enable wss:// in the extension options
+
+Open the extension **Preferences** page, tick **Use secure WebSocket (wss://)**, and click **Save**. Reload the extension in `about:debugging` if the icon does not turn green within a few seconds.
 
 ---
 
