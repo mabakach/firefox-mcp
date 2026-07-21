@@ -1,0 +1,35 @@
+{
+  "manifest_version": 3,
+  "name": "Firefox MCP Bridge",
+  "version": "0.1.0",
+  "description": "Bridges the firefox-mcp server to Firefox browser APIs for AI-driven automation",
+  "permissions": [
+    "tabs",
+    "activeTab",
+    "scripting",
+    "cookies",
+    "storage"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "background": {
+    "scripts": ["background.js"],
+    "type": "module"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_icon": "icons/disconnected.svg",
+    "default_title": "Firefox MCP — Disconnected"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  }
+}

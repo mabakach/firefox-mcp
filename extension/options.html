@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firefox MCP — Options</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 14px;
+      background: #f9f9fb;
+      color: #15141a;
+      padding: 24px;
+      min-width: 400px;
+      max-width: 520px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #d0d0d7;
+    }
+
+    header img { width: 32px; height: 32px; }
+
+    header h1 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #15141a;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: 500;
+      margin-bottom: 6px;
+      color: #15141a;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #6f6f8a;
+      margin-top: 4px;
+    }
+
+    input[type="password"],
+    input[type="number"],
+    input[type="text"] {
+      width: 100%;
+      padding: 8px 10px;
+      border: 1px solid #c0c0cf;
+      border-radius: 6px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #fff;
+      color: #15141a;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    input:focus {
+      border-color: #0060df;
+      box-shadow: 0 0 0 2px rgba(0, 96, 223, 0.2);
+    }
+
+    .actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    button {
+      padding: 8px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      transition: background 0.15s;
+    }
+
+    .btn-primary {
+      background: #0060df;
+      color: #fff;
+    }
+
+    .btn-primary:hover { background: #003eaa; }
+    .btn-primary:active { background: #002580; }
+
+    #status {
+      font-size: 13px;
+      color: #058b00;
+      display: none;
+    }
+
+    #status.error { color: #c50042; }
+
+    .connection-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 20px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: #fff;
+      border: 1px solid #d0d0d7;
+      font-size: 13px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .dot.connected { background: #22c55e; }
+    .dot.disconnected { background: #ef4444; }
+  </style>
+</head>
+<body>
+  <header>
+    <img id="status-icon" src="icons/disconnected.svg" alt="">
+    <h1>Firefox MCP Bridge</h1>
+  </header>
+
+  <div class="connection-status">
+    <span class="dot disconnected" id="dot"></span>
+    <span id="connection-label">Disconnected</span>
+  </div>
+
+  <form id="options-form">
+    <div class="field">
+      <label for="token">Secret Token</label>
+      <input type="password" id="token" name="token" placeholder="Paste your FIREFOX_MCP_TOKEN here" autocomplete="off" spellcheck="false">
+      <p class="hint">Generate with: <code>openssl rand -hex 32</code> — must match the server's <code>FIREFOX_MCP_TOKEN</code> env var.</p>
+    </div>
+
+    <div class="field">
+      <label for="port">WebSocket Port</label>
+      <input type="number" id="port" name="port" value="9009" min="1024" max="65535">
+      <p class="hint">Must match <code>FIREFOX_MCP_WS_PORT</code> on the server (default: 9009).</p>
+    </div>
+
+    <div class="field">
+      <label style="display:flex;align-items:center;gap:8px;font-weight:500;cursor:pointer">
+        <input type="checkbox" id="tls" name="tls" style="width:auto">
+        Use secure WebSocket (wss://)
+      </label>
+      <p class="hint">Enable if Firefox refuses the connection due to HTTPS-Only Mode. Requires <code>FIREFOX_MCP_TLS_CERT</code> and <code>FIREFOX_MCP_TLS_KEY</code> on the server.</p>
+    </div>
+
+    <div class="actions">
+      <button type="submit" class="btn-primary">Save</button>
+      <span id="status"></span>
+    </div>
+  </form>
+
+  <script src="options.js"></script>
+</body>
+</html>

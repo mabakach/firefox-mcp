@@ -1,0 +1,24 @@
+{
+  "name": "firefox-mcp",
+  "version": "0.1.0",
+  "description": "MCP server for remote Firefox browser control",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node --max-old-space-size=4096 ./node_modules/.bin/tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "typecheck": "node --max-old-space-size=4096 ./node_modules/.bin/tsc --noEmit"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.0",
+    "ws": "^8.18.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "@types/ws": "^8.5.14",
+    "tsx": "^4.19.0",
+    "typescript": "5.6.3"
+  }
+}
