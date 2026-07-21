@@ -15,12 +15,16 @@ async function loadSaved() {
 }
 
 async function updateConnectionStatus() {
-  // Read the current action title to determine connection state
-  const title = await browser.action.getTitle({});
-  const connected = title.includes('Connected');
-  dot.className = `dot ${connected ? 'connected' : 'disconnected'}`;
-  connectionLabel.textContent = connected ? title.replace('Firefox MCP — ', '') : 'Disconnected (reconnecting…)';
-  statusIcon.src = connected ? 'icons/connected.svg' : 'icons/disconnected.svg';
+  try {
+    const { connected, port } = await browser.runtime.sendMessage({ type: 'get_status' });
+    dot.className = `dot ${connected ? 'connected' : 'disconnected'}`;
+    connectionLabel.textContent = connected ? `Connected  ws://127.0.0.1:${port}` : 'Disconnected (reconnecting…)';
+    statusIcon.src = connected ? 'icons/connected.svg' : 'icons/disconnected.svg';
+  } catch {
+    dot.className = 'dot disconnected';
+    connectionLabel.textContent = 'Disconnected';
+    statusIcon.src = 'icons/disconnected.svg';
+  }
 }
 
 form.addEventListener('submit', async (e) => {

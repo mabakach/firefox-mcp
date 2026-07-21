@@ -6,6 +6,7 @@ let ws = null;
 let reconnectDelay = MIN_RECONNECT_MS;
 let reconnectTimer = null;
 let currentPort = DEFAULT_PORT;
+let isConnected = false;
 
 async function loadConfig() {
   const { token, port, tls } = await browser.storage.local.get(['token', 'port', 'tls']);
@@ -14,13 +15,21 @@ async function loadConfig() {
 }
 
 function setStatus(connected) {
+  isConnected = connected;
   const icon = connected ? 'icons/connected.svg' : 'icons/disconnected.svg';
+  const scheme = connected ? (ws?.url?.startsWith('wss') ? 'wss' : 'ws') : '';
   const title = connected
-    ? `Firefox MCP — Connected  ws://127.0.0.1:${currentPort}`
+    ? `Firefox MCP — Connected  ${scheme}://127.0.0.1:${currentPort}`
     : 'Firefox MCP — Disconnected (reconnecting…)';
   browser.action.setIcon({ path: icon });
   browser.action.setTitle({ title });
 }
+
+browser.runtime.onMessage.addListener((msg) => {
+  if (msg.type === 'get_status') {
+    return Promise.resolve({ connected: isConnected, port: currentPort });
+  }
+});
 
 function disconnect() {
   if (reconnectTimer) {
