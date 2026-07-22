@@ -14,7 +14,8 @@ export function startWsServer({
   token: string;
   tlsCert?: string;
   tlsKey?: string;
-}): Bridge {
+}): Promise<Bridge> {
+  return new Promise((resolve, reject) => {
   const bridge = new Bridge();
 
   let wss: WebSocketServer;
@@ -24,9 +25,11 @@ export function startWsServer({
       key: readFileSync(tlsKey),
     });
     wss = new WebSocketServer({ server: httpsServer });
+    httpsServer.on('error', reject);
     httpsServer.listen(port, '127.0.0.1');
   } else {
     wss = new WebSocketServer({ host: '127.0.0.1', port });
+    wss.on('error', reject);
   }
 
   let activeSocket: WebSocket | null = null;
@@ -78,7 +81,8 @@ export function startWsServer({
   wss.on('listening', () => {
     const scheme = tlsCert && tlsKey ? 'wss' : 'ws';
     process.stderr.write(`[firefox-mcp] WebSocket server listening on ${scheme}://127.0.0.1:${port}\n`);
+    resolve(bridge);
   });
 
-  return bridge;
+  }); // end Promise
 }

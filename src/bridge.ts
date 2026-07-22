@@ -2,9 +2,13 @@ import { randomUUID } from 'node:crypto';
 import type { WebSocket } from 'ws';
 import type { CommandName, PendingRequest, ResponseMessage } from './types.js';
 
+export interface IBridge {
+  send(command: CommandName, params?: Record<string, unknown>): Promise<unknown>;
+}
+
 const TIMEOUT_MS = 30_000;
 
-export class Bridge {
+export class Bridge implements IBridge {
   private socket: WebSocket | null = null;
   private pending = new Map<string, PendingRequest>();
 

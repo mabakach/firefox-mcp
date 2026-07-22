@@ -1,9 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { Bridge } from '../bridge.js';
+import type { IBridge } from '../bridge.js';
 import type { TabInfo } from '../types.js';
 
-export function registerTabTools(server: McpServer, bridge: Bridge): void {
+export function registerTabTools(server: McpServer, bridge: IBridge): void {
   server.tool('list_tabs', 'List all open Firefox tabs with their id, title, url, and active status.', async () => {
     try {
       const tabs = (await bridge.send('list_tabs')) as TabInfo[];

@@ -1,5 +1,7 @@
+import { existsSync } from 'node:fs';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { startWsServer } from './ws-server.js';
+import { startIpcServer, IpcBridge, ipcSocketPath } from './ipc.js';
 import { createMcpServer } from './mcp-server.js';
 
 const token = process.env.FIREFOX_MCP_TOKEN;
@@ -14,8 +16,6 @@ if (isNaN(port) || port < 1024 || port > 65535) {
   process.exit(1);
 }
 
-import { existsSync } from 'node:fs';
-
 const tlsCert = process.env.FIREFOX_MCP_TLS_CERT;
 const tlsKey = process.env.FIREFOX_MCP_TLS_KEY;
 
@@ -28,7 +28,27 @@ if (tlsKey && !existsSync(tlsKey)) {
   process.exit(1);
 }
 
-const bridge = startWsServer({ port, token, tlsCert, tlsKey });
+const socketPath = ipcSocketPath(port);
+let bridge;
+
+try {
+  const wsBridge = await startWsServer({ port, token, tlsCert, tlsKey });
+  startIpcServer(socketPath, wsBridge);
+  bridge = wsBridge;
+} catch (e) {
+  if ((e as NodeJS.ErrnoException).code !== 'EADDRINUSE') throw e;
+  process.stderr.write(`[firefox-mcp] Port ${port} in use — connecting to existing instance\n`);
+  try {
+    bridge = await IpcBridge.connect(socketPath);
+    process.stderr.write('[firefox-mcp] Running as secondary instance\n');
+  } catch {
+    process.stderr.write(
+      `[firefox-mcp] Error: port ${port} is occupied by a non-firefox-mcp process, or the primary instance has not started yet.\n`,
+    );
+    process.exit(1);
+  }
+}
+
 const server = createMcpServer(bridge);
 const transport = new StdioServerTransport();
 await server.connect(transport);

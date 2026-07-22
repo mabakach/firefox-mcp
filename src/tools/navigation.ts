@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { Bridge } from '../bridge.js';
+import type { IBridge } from '../bridge.js';
 
-export function registerNavigationTools(server: McpServer, bridge: Bridge): void {
+export function registerNavigationTools(server: McpServer, bridge: IBridge): void {
   server.tool('navigate', 'Navigate the active Firefox tab to a URL.', { url: z.string().url().describe('URL to navigate to') }, async ({ url }) => {
     try {
       await bridge.send('navigate', { url });

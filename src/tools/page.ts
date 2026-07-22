@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { Bridge } from '../bridge.js';
+import type { IBridge } from '../bridge.js';
 
-export function registerPageTools(server: McpServer, bridge: Bridge): void {
+export function registerPageTools(server: McpServer, bridge: IBridge): void {
   server.tool(
     'get_page_content',
     'Get the content of the active Firefox tab as plain text or raw HTML.',

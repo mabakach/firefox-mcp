@@ -1,8 +1,8 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { z } from 'zod';
-import { Bridge } from '../bridge.js';
+import type { IBridge } from '../bridge.js';
 
-export function registerInteractionTools(server: McpServer, bridge: Bridge): void {
+export function registerInteractionTools(server: McpServer, bridge: IBridge): void {
   server.tool(
     'click',
     'Click a DOM element in the active Firefox tab identified by a CSS selector.',
