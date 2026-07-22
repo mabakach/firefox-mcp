@@ -25,12 +25,12 @@ export function startWsServer({
       key: readFileSync(tlsKey),
     });
     wss = new WebSocketServer({ server: httpsServer });
-    httpsServer.on('error', reject);
     httpsServer.listen(port, '127.0.0.1');
   } else {
     wss = new WebSocketServer({ host: '127.0.0.1', port });
-    wss.on('error', reject);
   }
+  // ws re-emits server errors onto wss regardless of TLS mode — one listener covers both
+  wss.on('error', reject);
 
   let activeSocket: WebSocket | null = null;
 
