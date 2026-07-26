@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Firefox MCP Bridge",
+  "name": "MCP Browser Bridge",
   "version": "0.1.0",
   "description": "Bridges the firefox-mcp server to Firefox browser APIs for AI-driven automation",
   "permissions": [
