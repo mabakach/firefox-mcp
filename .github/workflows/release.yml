@@ -37,7 +37,7 @@ jobs:
         id: artifacts
         run: |
           VERSION="${GITHUB_REF_NAME#v}"
-          XPI_FILE=$(ls artifacts/firefox_mcp_bridge-*.xpi 2>/dev/null | head -1)
+          XPI_FILE=$(ls artifacts/*.xpi 2>/dev/null | head -1)
           XPI_NAME=$(basename "$XPI_FILE")
           XPI_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/${XPI_NAME}"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
