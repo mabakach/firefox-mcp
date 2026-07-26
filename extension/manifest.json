@@ -31,5 +31,12 @@
   "options_ui": {
     "page": "options.html",
     "open_in_tab": false
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "firefox-mcp@mabaka.ch",
+      "strict_min_version": "109.0",
+      "update_url": "https://raw.githubusercontent.com/mabakach/firefox-mcp/main/updates.json"
+    }
   }
 }

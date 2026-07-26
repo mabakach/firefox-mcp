@@ -1,0 +1,86 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: yarn
+
+      - run: yarn install --frozen-lockfile
+
+      - name: Build MCP server
+        run: yarn build
+
+      - name: Sign extension via AMO
+        run: |
+          yarn sign:ext \
+            --api-key "${{ secrets.AMO_JWT_ISSUER }}" \
+            --api-secret "${{ secrets.AMO_JWT_SECRET }}"
+
+      - name: Resolve artifact names
+        id: artifacts
+        run: |
+          VERSION="${GITHUB_REF_NAME#v}"
+          XPI_FILE=$(ls artifacts/firefox_mcp_bridge-*.xpi 2>/dev/null | head -1)
+          XPI_NAME=$(basename "$XPI_FILE")
+          XPI_URL="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}/${XPI_NAME}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "xpi_file=${XPI_FILE}" >> "$GITHUB_OUTPUT"
+          echo "xpi_url=${XPI_URL}" >> "$GITHUB_OUTPUT"
+          echo "server_tarball=firefox-mcp-server-${VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
+
+      - name: Bundle MCP server
+        run: tar -czf "${{ steps.artifacts.outputs.server_tarball }}" dist/ package.json
+
+      - name: Update updates.json
+        run: |
+          node - <<'EOF'
+          const fs = require('fs');
+          const manifest = JSON.parse(fs.readFileSync('extension/manifest.json', 'utf8'));
+          const addonId = manifest.browser_specific_settings.gecko.id;
+          const updates = JSON.parse(fs.readFileSync('updates.json', 'utf8'));
+          const version = process.env.VERSION;
+          const xpiUrl = process.env.XPI_URL;
+          const list = updates.addons[addonId].updates;
+          if (!list.find(u => u.version === version)) {
+            list.push({ version, update_link: xpiUrl });
+          }
+          fs.writeFileSync('updates.json', JSON.stringify(updates, null, 2) + '\n');
+          EOF
+        env:
+          VERSION: ${{ steps.artifacts.outputs.version }}
+          XPI_URL: ${{ steps.artifacts.outputs.xpi_url }}
+
+      - name: Commit updated updates.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add updates.json
+          git diff --staged --quiet || git commit -m "chore: update updates.json for ${GITHUB_REF_NAME}"
+          git push origin HEAD:main
+
+      - name: Create GitHub Release
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes \
+            "${{ steps.artifacts.outputs.xpi_file }}" \
+            "${{ steps.artifacts.outputs.server_tarball }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
