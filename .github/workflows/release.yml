@@ -58,9 +58,9 @@ jobs:
           const version = process.env.VERSION;
           const xpiUrl = process.env.XPI_URL;
           const list = updates.addons[addonId].updates;
-          if (!list.find(u => u.version === version)) {
-            list.push({ version, update_link: xpiUrl });
-          }
+          const idx = list.findIndex(u => u.version === version);
+          const entry = { version, update_link: xpiUrl };
+          if (idx >= 0) list[idx] = entry; else list.push(entry);
           fs.writeFileSync('updates.json', JSON.stringify(updates, null, 2) + '\n');
           EOF
         env:

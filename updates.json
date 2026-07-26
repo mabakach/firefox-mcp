@@ -1,12 +1,7 @@
 {
   "addons": {
     "firefox-mcp@mabaka.ch": {
-      "updates": [
-        {
-          "version": "0.1.0",
-          "update_link": "https://github.com/mabakach/firefox-mcp/releases/download/v0.1.0/"
-        }
-      ]
+      "updates": []
     }
   }
 }
