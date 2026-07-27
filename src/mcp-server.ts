@@ -7,7 +7,7 @@ import { registerInteractionTools } from './tools/interaction.js';
 
 export function createMcpServer(bridge: IBridge): McpServer {
   const server = new McpServer({
-    name: 'firefox-mcp',
+    name: 'mcp-browser-bridge',
     version: '0.1.0',
   });
 

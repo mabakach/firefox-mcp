@@ -43,7 +43,7 @@ jobs:
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           echo "xpi_file=${XPI_FILE}" >> "$GITHUB_OUTPUT"
           echo "xpi_url=${XPI_URL}" >> "$GITHUB_OUTPUT"
-          echo "server_tarball=firefox-mcp-server-${VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
+          echo "server_tarball=mcp-browser-bridge-server-${VERSION}.tar.gz" >> "$GITHUB_OUTPUT"
 
       - name: Bundle MCP server
         run: tar -czf "${{ steps.artifacts.outputs.server_tarball }}" dist/ package.json

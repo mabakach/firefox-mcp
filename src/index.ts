@@ -37,13 +37,13 @@ try {
   bridge = wsBridge;
 } catch (e) {
   if ((e as NodeJS.ErrnoException).code !== 'EADDRINUSE') throw e;
-  process.stderr.write(`[firefox-mcp] Port ${port} in use — connecting to existing instance\n`);
+  process.stderr.write(`[mcp-browser-bridge] Port ${port} in use — connecting to existing instance\n`);
   try {
     bridge = await IpcBridge.connect(socketPath);
-    process.stderr.write('[firefox-mcp] Running as secondary instance\n');
+    process.stderr.write('[mcp-browser-bridge] Running as secondary instance\n');
   } catch {
     process.stderr.write(
-      `[firefox-mcp] Error: port ${port} is occupied by a non-firefox-mcp process, or the primary instance has not started yet.\n`,
+      `[mcp-browser-bridge] Error: port ${port} is occupied by a non-mcp-browser-bridge process, or the primary instance has not started yet.\n`,
     );
     process.exit(1);
   }

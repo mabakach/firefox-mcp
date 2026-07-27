@@ -34,7 +34,7 @@ Claude Code  ──stdio──▶  MCP Server  ──WebSocket──▶  Firefox
 
 ### Multi-session IPC (`src/ipc.ts`)
 
-Only one process can bind a given port. When a second Claude Code session starts, `index.ts` catches `EADDRINUSE` and connects to the primary instance via a Unix socket at `/tmp/firefox-mcp-<port>.sock`. The `IpcBridge` class implements the same `IBridge` interface as `Bridge`, so `mcp-server.ts` is unaware of whether it's primary or secondary.
+Only one process can bind a given port. When a second Claude Code session starts, `index.ts` catches `EADDRINUSE` and connects to the primary instance via a Unix socket at `/tmp/mcp-browser-bridge-<port>.sock`. The `IpcBridge` class implements the same `IBridge` interface as `Bridge`, so `mcp-server.ts` is unaware of whether it's primary or secondary.
 
 ### Authentication
 

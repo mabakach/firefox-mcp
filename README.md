@@ -1,4 +1,4 @@
-# firefox-mcp
+# mcp-browser-bridge
 
 Remote-control Firefox from Claude Code via the Model Context Protocol.
 
@@ -29,7 +29,7 @@ The MCP server exposes 16 browser-automation tools. The Firefox extension connec
 
 ```bash
 git clone <this-repo>
-cd firefox-mcp
+cd mcp-browser-bridge
 yarn install
 yarn build
 ```
@@ -55,14 +55,14 @@ Example output: `a3f8c2d1e4b7...` — copy this string.
 1. Open Firefox and navigate to `about:debugging#/runtime/this-firefox`
 2. Click **Load Temporary Add-on…**
 3. Navigate to the `extension/` folder inside this repo and select `manifest.json`
-4. The **Firefox MCP Bridge** extension appears in the toolbar with a **red** icon (disconnected)
+4. The **MCP Browser Bridge** extension appears in the toolbar with a **red** icon (disconnected)
 
 > **Temporary add-ons** are removed when Firefox restarts. For a permanent installation use Firefox Developer Edition with `xpinstall.signatures.required` set to `false` in `about:config`, then load the extension via `about:addons` → Install Add-on From File.
 
 ### Configure the extension
 
 1. **Right-click** the toolbar icon → **Manage Extension** → **Preferences**  
-   *(or: `about:addons` → Firefox MCP Bridge → Preferences)*
+   *(or: `about:addons` → MCP Browser Bridge → Preferences)*
 2. Paste your secret token into the **Secret Token** field
 3. Set the **WebSocket Port** (default: `9009`) — must match `FIREFOX_MCP_WS_PORT` on the server
 4. Click **Save**
@@ -78,10 +78,10 @@ The toolbar icon turns **green** once the extension connects to a running MCP se
 Use the `claude mcp add` command. Replace the path and token with your own values:
 
 ```bash
-claude mcp add firefox \
+claude mcp add mcp-browser-bridge \
   -e FIREFOX_MCP_TOKEN=<your-secret-token> \
   -e FIREFOX_MCP_WS_PORT=9009 \
-  -- node /absolute/path/to/firefox-mcp/dist/index.js
+  -- node /absolute/path/to/mcp-browser-bridge/dist/index.js
 ```
 
 This registers the server at the default **local** scope (current machine, all projects). To restrict it to a single project, add `--scope project`; to make it available across all machines via your user config, use `--scope user`.
@@ -165,26 +165,26 @@ This creates the CA and registers it with Firefox (via the `nss` cert database).
 ### 3. Generate a certificate for 127.0.0.1
 
 ```bash
-mkdir -p ~/.firefox-mcp
-mkcert -key-file ~/.firefox-mcp/key.pem -cert-file ~/.firefox-mcp/cert.pem 127.0.0.1
+mkdir -p ~/.mcp-browser-bridge
+mkcert -key-file ~/.mcp-browser-bridge/key.pem -cert-file ~/.mcp-browser-bridge/cert.pem 127.0.0.1
 ```
 
 ### 4. Pass the cert paths to the MCP server
 
 ```bash
-claude mcp add firefox \
+claude mcp add mcp-browser-bridge \
   -s user \
   -e FIREFOX_MCP_TOKEN=<your-token> \
   -e FIREFOX_MCP_WS_PORT=9009 \
-  -e FIREFOX_MCP_TLS_CERT=$HOME/.firefox-mcp/cert.pem \
-  -e FIREFOX_MCP_TLS_KEY=$HOME/.firefox-mcp/key.pem \
-  -- node /absolute/path/to/firefox-mcp/dist/index.js
+  -e FIREFOX_MCP_TLS_CERT=$HOME/.mcp-browser-bridge/cert.pem \
+  -e FIREFOX_MCP_TLS_KEY=$HOME/.mcp-browser-bridge/key.pem \
+  -- node /absolute/path/to/mcp-browser-bridge/dist/index.js
 ```
 
 If you already have the server registered without TLS, remove it first:
 
 ```bash
-claude mcp remove firefox
+claude mcp remove mcp-browser-bridge
 ```
 
 ### 5. Enable wss:// in the extension options

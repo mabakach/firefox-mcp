@@ -5,7 +5,7 @@ import type { Bridge, IBridge } from './bridge.js';
 import type { CommandName } from './types.js';
 
 export function ipcSocketPath(port: number): string {
-  return `/tmp/firefox-mcp-${port}.sock`;
+  return `/tmp/mcp-browser-bridge-${port}.sock`;
 }
 
 // Run on the primary instance: accepts command requests from secondaries.
@@ -62,7 +62,7 @@ export class IpcBridge implements IBridge {
     this.socket.on('close', () => {
       for (const [id, req] of this.pending) {
         this.pending.delete(id);
-        req.reject(new Error('Connection to primary firefox-mcp instance lost'));
+        req.reject(new Error('Connection to primary mcp-browser-bridge instance lost'));
       }
     });
     this.socket.on('error', () => {});

@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "MCP Browser Bridge",
   "version": "0.1.1",
-  "description": "Bridges the firefox-mcp server to Firefox browser APIs for AI-driven automation",
+  "description": "Bridges the MCP server to browser APIs for AI-driven automation",
   "permissions": [
     "tabs",
     "activeTab",
@@ -36,7 +36,7 @@
     "gecko": {
       "id": "firefox-mcp@mabaka.ch",
       "strict_min_version": "109.0",
-      "update_url": "https://raw.githubusercontent.com/mabakach/firefox-mcp/main/updates.json"
+      "update_url": "https://raw.githubusercontent.com/mabakach/mcp-browser-bridge/main/updates.json"
     }
   }
 }

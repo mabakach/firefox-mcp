@@ -80,7 +80,7 @@ export function startWsServer({
 
   wss.on('listening', () => {
     const scheme = tlsCert && tlsKey ? 'wss' : 'ws';
-    process.stderr.write(`[firefox-mcp] WebSocket server listening on ${scheme}://127.0.0.1:${port}\n`);
+    process.stderr.write(`[mcp-browser-bridge] WebSocket server listening on ${scheme}://127.0.0.1:${port}\n`);
     resolve(bridge);
   });
 
