@@ -5,6 +5,10 @@
         {
           "version": "0.1.1",
           "update_link": "https://github.com/mabakach/firefox-mcp/releases/download/v0.1.1/98e56ab365ae431badfa-0.1.1.xpi"
+        },
+        {
+          "version": "0.1.2",
+          "update_link": "https://github.com/mabakach/mcp-browser-bridge/releases/download/v0.1.2/98e56ab365ae431badfa-0.1.2.xpi"
         }
       ]
     }
