@@ -14,14 +14,25 @@ async function loadConfig() {
   return { token: token ?? null, port: currentPort, tls: tls === true };
 }
 
+function makeCircleIcon(color, size) {
+  const canvas = new OffscreenCanvas(size, size);
+  const ctx = canvas.getContext('2d');
+  const r = size / 2 - 1;
+  ctx.beginPath();
+  ctx.arc(size / 2, size / 2, r, 0, 2 * Math.PI);
+  ctx.fillStyle = color;
+  ctx.fill();
+  return ctx.getImageData(0, 0, size, size);
+}
+
 function setStatus(connected) {
   isConnected = connected;
-  const icon = connected ? 'icons/connected.svg' : 'icons/disconnected.svg';
+  const color = connected ? '#22c55e' : '#ef4444';
   const scheme = connected ? (ws?.url?.startsWith('wss') ? 'wss' : 'ws') : '';
   const title = connected
     ? `Firefox MCP — Connected  ${scheme}://127.0.0.1:${currentPort}`
     : 'Firefox MCP — Disconnected (reconnecting…)';
-  browser.action.setIcon({ path: icon });
+  browser.action.setIcon({ imageData: { 16: makeCircleIcon(color, 16), 32: makeCircleIcon(color, 32) } });
   browser.action.setTitle({ title });
 }
 
